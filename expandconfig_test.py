@@ -83,6 +83,47 @@ settingc=stuff
 
 		self.compare_configs(config_expected, config_new)
 
+	def test_two_expansions(self):
+		input_data = """
+[sectiona]
+queue=a;b
+engine=1..2
+settingb=stuff
+settingc=stuff
+		"""
+		input_expected = """
+[sectiona-a-1]
+queue=a
+engine=1
+settingb=stuff
+settingc=stuff
+
+[sectiona-a-2]
+queue=a
+engine=2
+settingb=stuff
+settingc=stuff
+
+[sectiona-b-1]
+queue=b
+engine=1
+settingb=stuff
+settingc=stuff
+
+[sectiona-b-2]
+queue=b
+engine=2
+settingb=stuff
+settingc=stuff
+		"""
+
+		config = self.load_config(input_data)
+		config_expected = self.load_config(input_expected)
+
+		config_new = self.expander.expand(config)
+
+		self.compare_configs(config_expected, config_new)
+
 
 	def compare_configs(self, configa, configb):
 		sectionsa = sorted(configa.sections())
