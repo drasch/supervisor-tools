@@ -37,7 +37,7 @@ engine=1
 settingb=stuff
 settingc=stuff
 		"""
-		input_expected = """
+		output_expected = """
 [sectiona-a-1]
 queue=a
 engine=1
@@ -52,7 +52,7 @@ settingc=stuff
 		"""
 
 		config = self.load_config(input_data)
-		config_expected = self.load_config(input_expected)
+		config_expected = self.load_config(output_expected)
 
 		config_new = self.expander.expand(config)
 		self.compare_configs(config_expected, config_new)
@@ -64,7 +64,7 @@ queue=a;b
 settingb=stuff
 settingc=stuff
 		"""
-		input_expected = """
+		output_expected = """
 [sectiona-a]
 queue=a
 settingb=stuff
@@ -77,7 +77,7 @@ settingc=stuff
 		"""
 
 		config = self.load_config(input_data)
-		config_expected = self.load_config(input_expected)
+		config_expected = self.load_config(output_expected)
 
 		config_new = self.expander.expand(config)
 
@@ -91,7 +91,7 @@ engine=1..2
 settingb=stuff
 settingc=stuff
 		"""
-		input_expected = """
+		output_expected = """
 [sectiona-a-1]
 queue=a
 engine=1
@@ -118,7 +118,7 @@ settingc=stuff
 		"""
 
 		config = self.load_config(input_data)
-		config_expected = self.load_config(input_expected)
+		config_expected = self.load_config(output_expected)
 
 		config_new = self.expander.expand(config)
 
