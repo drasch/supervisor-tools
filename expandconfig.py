@@ -67,13 +67,30 @@ class ConfigExpander:
 		return config_out
 
 if __name__ == '__main__':
+	# read standard in
 	config = ConfigParser.RawConfigParser(allow_no_value=True)
-	config.readfp(io.BytesIO(sample_config))
+	config.readfp(sys.stdin)
 
-	config.get("stuff", "command")
+	# parse it for __expand__ section
 
+	# output expanded
 	expander = ConfigExpander()
 	config_new = expander.expand(config)
 	config_new.write(sys.stdout)
 
 
+#	config = ConfigParser.RawConfigParser(allow_no_value=True)
+#	config.readfp(io.BytesIO(sample_config))
+#
+#	config.get("stuff", "command")
+#
+#	expander = ConfigExpander()
+#	config_new = expander.expand(config)
+#	config_new.write(sys.stdout)
+
+
+
+# TODO
+# read standard in
+# make loop prettier
+# handle expand section dynamically
