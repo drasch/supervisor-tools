@@ -4,6 +4,7 @@ import ConfigParser
 import sys
 import re
 import itertools
+import StringIO
 
 # for python 2.5 compatibility
 # http://docs.python.org/library/itertools.html#itertools.product
@@ -19,7 +20,7 @@ def product(*args, **kwds):
 
 
 sample_config = """
-[stuff]
+[program:stuff]
 engine=1..4
 queue=admin;small;large;medium
 command=%(queue)s %(engine)s
@@ -65,44 +66,48 @@ class ConfigExpander:
 			if expanded_fields == []: # no fields actually expanded, get into the loop below
 				expansions = [[None]]
 
+			expanded_section_names = []
 			for f in product(*expansions):
 				new_section_name=i
 
 				if f != (None,):
 					new_section_name="%s-%s" % (i,"-".join(map(str,f)))
+					expanded_section_names.append(new_section_name)
 				config_out.add_section(new_section_name)
 				values = dict(config.items(i))
 				if f != (None,):
 					values.update(zip(expanded_fields, f))
 				for k,v in values.items():
 					config_out.set(new_section_name,k,v)
+			self.register_group(i,expanded_section_names,config_out)
 		return config_out
+	def register_group(self, section_name, expanded_names, config_out):
+		pass
+
+class ConfigExpanderWithGroup(ConfigExpander):
+	def register_group(self, section_name, expanded_names, config_out):
+		strip = lambda s: s.split(":")[1]
+		group_name = "group:"+strip(section_name)
+		program_names = ','.join(map(strip, expanded_names))
+
+		config_out.add_section(group_name)
+		config_out.set(group_name,'programs',program_names)
+
 
 if __name__ == '__main__':
 	# read standard in
 	config = ConfigParser.RawConfigParser()
-	config.readfp(sys.stdin)
+	#config.readfp(sys.stdin)
+	config.readfp(StringIO.StringIO(sample_config))
 
 	# parse it for __expand__ section
 
 	# output expanded
-	expander = ConfigExpander()
+	expander = ConfigExpanderWithGroup()
 	config_new = expander.expand(config)
 	config_new.write(sys.stdout)
 
 
-#	config = ConfigParser.RawConfigParser(allow_no_value=True)
-#	config.readfp(io.BytesIO(sample_config))
-#
-#	config.get("stuff", "command")
-#
-#	expander = ConfigExpander()
-#	config_new = expander.expand(config)
-#	config_new.write(sys.stdout)
-
-
-
 # TODO
-# read standard in
 # make loop prettier
 # handle expand section dynamically
