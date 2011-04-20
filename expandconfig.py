@@ -1,10 +1,22 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 import ConfigParser
-import io
 import sys
 import re
 import itertools
+
+# for python 2.5 compatibility
+# http://docs.python.org/library/itertools.html#itertools.product
+def product(*args, **kwds):
+    # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
+    # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+    pools = map(tuple, args) * kwds.get('repeat', 1)
+    result = [[]]
+    for pool in pools:
+        result = [x+[y] for x in result for y in pool]
+    for prod in result:
+        yield tuple(prod)
+
 
 sample_config = """
 [stuff]
@@ -37,7 +49,7 @@ class ConfigExpander:
 
 
 	def expand(self, config):
-		config_out = ConfigParser.ConfigParser(allow_no_value=True)
+		config_out = ConfigParser.ConfigParser()
 		expand_fields = ['queue', 'engine']
 		for i in config.sections():
 			expanded_fields = []
@@ -53,7 +65,7 @@ class ConfigExpander:
 			if expanded_fields == []: # no fields actually expanded, get into the loop below
 				expansions = [[None]]
 
-			for f in itertools.product(*expansions):
+			for f in product(*expansions):
 				new_section_name=i
 
 				if f != (None,):
@@ -68,7 +80,7 @@ class ConfigExpander:
 
 if __name__ == '__main__':
 	# read standard in
-	config = ConfigParser.RawConfigParser(allow_no_value=True)
+	config = ConfigParser.RawConfigParser()
 	config.readfp(sys.stdin)
 
 	# parse it for __expand__ section

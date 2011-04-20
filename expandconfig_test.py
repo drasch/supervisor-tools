@@ -1,10 +1,10 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 
 import expandconfig
 import unittest
 import ConfigParser
-import io
+import StringIO
 import sys
 
 class TestExpandConfig(unittest.TestCase):
@@ -136,8 +136,8 @@ settingc=stuff
 			self.assertEqual(optionsa, optionsb)
 
 	def load_config(config_text):
-		config = ConfigParser.RawConfigParser(allow_no_value=True)
-		config.readfp(io.BytesIO(config_text))
+		config = ConfigParser.RawConfigParser()
+		config.readfp(StringIO.StringIO(config_text))
 		return config
 
 	load_config = staticmethod(load_config)
