@@ -16,6 +16,7 @@ class IniProcessor {
 	public function expand() {
 		$newdata = array();
 		foreach ($this->data as $section_name => $section) {
+			$this->original_name = $section_name;
 			$expanded_fields = array();
 			foreach($this->mapping['expand'] as $expand) {
 				$expanded_field = $this->parseExpand($section[$expand]);
@@ -101,6 +102,21 @@ class IniProcessor {
 		}
 		return $output;
 	}
+	protected function getName($string) {
+		$parts = explode(":", $string);
+		$trash = array_shift($parts);
+		return array_shift($parts);
+	}
+	public function group() {
+
+		$group = array();
+		foreach($this->data as $section_name=>$section) {
+			$group[] = $this->getName($section_name);
+		}
+		$group_name = "group:".$this->getName($this->original_name);
+		$this->data[$group_name] = array();
+		$this->data[$group_name]["programs"] = implode(",", $group);
+	}
 
 	public function dump() {
 		foreach($this->data as $section_name=>$section) {
@@ -121,4 +137,5 @@ $ini = new IniProcessor($argv[1]);
 $ini->expand();
 $ini->replace();
 $ini->remove();
+$ini->group();
 $ini->dump();
