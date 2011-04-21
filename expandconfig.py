@@ -97,8 +97,8 @@ class ConfigExpanderWithGroup(ConfigExpander):
 if __name__ == '__main__':
 	# read standard in
 	config = ConfigParser.RawConfigParser()
-	#config.readfp(sys.stdin)
-	config.readfp(StringIO.StringIO(sample_config))
+	config.readfp(sys.stdin)
+	#config.readfp(StringIO.StringIO(sample_config))
 
 	# parse it for __expand__ section
 
