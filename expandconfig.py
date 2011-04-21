@@ -107,6 +107,22 @@ if __name__ == '__main__':
 	config_new = expander.expand(config)
 	config_new.write(sys.stdout)
 
+# code used for testing
+if false:
+	expander = ConfigExpanderWithGroup()
+	config_new = expander.expand(config)
+	config_new.write(middleBuffer)
+
+	readBuffer = StringIO.StringIO(middleBuffer.getvalue())
+	config = ConfigParser.ConfigParser()
+	config.readfp(readBuffer)
+	for i in config.sections():
+			try:
+					print config.get(i,"command")
+			except ConfigParser.NoOptionError:
+					pass
+	config.write(sys.stdout)
+
 
 # TODO
 # make loop prettier
