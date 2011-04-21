@@ -1,5 +1,5 @@
 #!/usr/bin/php5
-#<?php
+<?php
 class IniProcessor {
 	protected $mapping = array(
 		"expand" => array("engine"),
@@ -106,14 +106,15 @@ class IniProcessor {
 		foreach($this->data as $section_name=>$section) {
 			print("[$section_name]\n");
 			foreach ($section as $field=>$value) {
-				print("$field=\"$value\"\n");
+				print("$field=$value\n");
 			}
 		}
 	}
 }
 										
-if ($argc != 1) {
-	echo "usage: expandconfig.php <input.ini>";
+if ($argc != 2) {
+	echo "usage: expandconfig.php <input.ini>\n";
+	die();
 }
 
 $ini = new IniProcessor($argv[1]);
