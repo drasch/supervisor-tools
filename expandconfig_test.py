@@ -124,6 +124,23 @@ settingc=stuff
 
 		self.compare_configs(config_expected, config_new)
 
+	def test_group_expander(self):
+		input_data = """
+[program:sectiona]
+queue=a;b
+engine=1..2
+settingb=stuff
+settingc=stuff
+		"""
+
+		config = self.load_config(input_data)
+
+		group_expander = expandconfig.ConfigExpanderWithGroup()
+		config_new = group_expander.expand(config)
+
+		programs = config_new.get("group:sectiona", "programs")
+		self.assertEqual("sectiona-a-1,sectiona-a-2,sectiona-b-1,sectiona-b-2", programs)
+
 
 	def compare_configs(self, configa, configb):
 		sectionsa = sorted(configa.sections())

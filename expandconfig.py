@@ -110,4 +110,5 @@ if __name__ == '__main__':
 
 # TODO
 # make loop prettier
+# add command-line parameter for expand fields
 # handle expand section dynamically
