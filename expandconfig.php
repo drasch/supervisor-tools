@@ -1,9 +1,10 @@
-<?php
+#!/usr/bin/php5
+#<?php
 class IniProcessor {
 	protected $mapping = array(
-		"expand" => array("engines", "type", "queue"),
+		"expand" => array("engine")
 		"replace" => array("command"),
-		"remove" => array("engines", "channels" )
+		"remove" => array("engines", "type", "queue" )
 	);
 
 	protected $data;
@@ -111,11 +112,12 @@ class IniProcessor {
 	}
 }
 										
+if ($argc != 1) {
+	echo "usage: expandconfig.php <input.ini>";
+}
 
-
-$ini = new IniProcessor("Consumer1EnginePerProcess-Input.conf");
+$ini = new IniProcessor($argv[1]);
 $ini->expand();
 $ini->replace();
 $ini->remove();
-//$ini->write("Consumer1EnginePerProcessOut.conf");
 $ini->dump();
