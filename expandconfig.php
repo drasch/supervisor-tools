@@ -3,7 +3,7 @@
 class IniProcessor {
 	protected $mapping = array(
 		"expand" => array("engine"),
-		"replace" => array("command"),
+		"replace" => array("command","process_name"),
 		"remove" => array("engines", "type", "queue" )
 	);
 
