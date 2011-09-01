@@ -48,39 +48,56 @@ class ConfigExpander:
 			expanded = value.split(';')
 		return expanded
 
+	def expand_fields(self, section, expand_fields):
+		expanded_fields = []
+		expansions = []
+		for f in expand_fields:
+			try:
+				expanded_field_values = self.parse_expand(config.get(section,f))
+				expanded_fields.append(f)
+				expansions.append(expanded_field_values)
+			except ConfigParser.NoOptionError:
+				pass
+
+		if expanded_fields == []: # no fields actually expanded, get into the loop below
+			expansions = [[None]]
+
+
+		return [expanded_fields, list(product(*expansions))]
 
 	def expand(self, config):
 		config_out = ConfigParser.ConfigParser()
 		expand_fields = ['queue', 'engine']
-		for i in config.sections():
-			expanded_fields = []
-			expansions = []
-			for f in expand_fields:
+		for section in config.sections():
+			[expanded_fields, expansions] = self.expand_fields(section, expand_fields)
+			expanded_section_names = []
+			for f in expansions:
+				new_section_name=section
+
+				if f != (None,):
+					new_section_name="%s-%s" % (section,"-".join(map(str,f)))
+					expanded_section_names.append(new_section_name)
+				config_out.add_section(new_section_name)
+				values = dict(config.items(section))
+				if f != (None,):
+					values.update(zip(expanded_fields, f))
+				for k,v in values.items():
+					config_out.set(new_section_name,k,v)
+			self.register_group(section,expanded_section_names,config_out)
+		return config_out
+
+	def substitute(self, config, fields):
+		for section in config.sections():
+			for f in fields:
 				try:
-					expanded_field_values = self.parse_expand(config.get(i,f))
+					expanded_field_values = self.parse_expand(config.get(section,f))
 					expanded_fields.append(f)
 					expansions.append(expanded_field_values)
 				except ConfigParser.NoOptionError:
 					pass
 
-			if expanded_fields == []: # no fields actually expanded, get into the loop below
-				expansions = [[None]]
+		return self
 
-			expanded_section_names = []
-			for f in product(*expansions):
-				new_section_name=i
-
-				if f != (None,):
-					new_section_name="%s-%s" % (i,"-".join(map(str,f)))
-					expanded_section_names.append(new_section_name)
-				config_out.add_section(new_section_name)
-				values = dict(config.items(i))
-				if f != (None,):
-					values.update(zip(expanded_fields, f))
-				for k,v in values.items():
-					config_out.set(new_section_name,k,v)
-			self.register_group(i,expanded_section_names,config_out)
-		return config_out
 	def register_group(self, section_name, expanded_names, config_out):
 		pass
 
@@ -105,6 +122,7 @@ if __name__ == '__main__':
 	# output expanded
 	expander = ConfigExpanderWithGroup()
 	config_new = expander.expand(config)
+	config_new = expander.substitute(config_new, ['process_name', 'command'])
 	config_new.write(sys.stdout)
 
 

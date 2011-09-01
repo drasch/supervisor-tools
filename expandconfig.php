@@ -1,4 +1,4 @@
-#!/usr/bin/php5
+#!/usr/bin/php
 <?php
 class IniProcessor {
 	protected $mapping = array(
