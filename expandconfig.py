@@ -48,7 +48,7 @@ class ConfigExpander:
 			expanded = value.split(';')
 		return expanded
 
-	def expand_fields(self, section, expand_fields):
+	def expand_fields(self, config, section, expand_fields):
 		expanded_fields = []
 		expansions = []
 		for f in expand_fields:
@@ -69,7 +69,7 @@ class ConfigExpander:
 		config_out = ConfigParser.ConfigParser()
 		expand_fields = ['queue', 'engine']
 		for section in config.sections():
-			[expanded_fields, expansions] = self.expand_fields(section, expand_fields)
+			[expanded_fields, expansions] = self.expand_fields(config, section, expand_fields)
 			expanded_section_names = []
 			for f in expansions:
 				new_section_name=section
